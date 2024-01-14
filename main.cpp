@@ -18,7 +18,6 @@ constexpr GLuint WIDTH            = 512;
 constexpr GLuint HEIGHT           = 512;
 constexpr GLuint BUFFER_SIZE      = WIDTH * HEIGHT * sizeof(GLfloat);
 constexpr GLfloat UPDATE_TIME     = 0.016F;
-constexpr float PI                = 3.1415926535F;
 
 enum
 {
