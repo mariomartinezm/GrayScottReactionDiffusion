@@ -1,6 +1,6 @@
 #version 450 core
 
-layout(local_size_x = 32, local_size_y = 32) in;
+layout(local_size_x = 20, local_size_y = 20) in;
 
 layout (std430, binding = 0) readonly buffer dcA1 { float A1 []; };
 layout (std430, binding = 1) buffer dcA2          { float A2 []; };

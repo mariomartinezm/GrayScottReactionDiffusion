@@ -15,8 +15,8 @@
 #include "camera.h"
 #include "util.h"
 
-constexpr GLuint WIDTH            = 512;
-constexpr GLuint HEIGHT           = 512;
+constexpr GLuint WIDTH            = 1280;
+constexpr GLuint HEIGHT           = 720;
 constexpr GLuint BUFFER_SIZE      = WIDTH * HEIGHT * sizeof(GLfloat);
 constexpr GLfloat UPDATE_TIME     = 0.016F;
 
@@ -192,7 +192,7 @@ int main()
 
             computeProgram.use();
 
-            glDispatchCompute(WIDTH / 32, HEIGHT / 32, 1);
+            glDispatchCompute(WIDTH / 20, HEIGHT / 20, 1);
 
             // To ensure the visibility of writes to the outputTexture between
             // shader invocations in two different rendering commands, i.e.,
