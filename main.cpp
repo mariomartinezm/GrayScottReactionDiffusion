@@ -194,10 +194,18 @@ int main()
 
             glDispatchCompute(WIDTH / 32, HEIGHT / 32, 1);
 
-            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT |
-                            GL_TEXTURE_FETCH_BARRIER_BIT       |
-                            GL_SHADER_STORAGE_BARRIER_BIT      |
-                            GL_BUFFER_UPDATE_BARRIER_BIT);
+            // To ensure the visibility of writes to the outputTexture between
+            // shader invocations in two different rendering commands, i.e.,
+            // making an incoherent write from one command visible to a read in
+            // a later OpenGL command (external visibility), we must use a call
+            // to the follwing function between the writing OpenGL call and the
+            // reading OpenGL call. The thing to keep in mind about the various
+            // bits in the bitfield is this: they represent the operation you
+            // want to make the incoherent memory access visible to. If you
+            // want to image load/store operations from one command to be
+            // visible to image load/store operations from another command you
+            // must use GL_SHADER_IMAGE_ACCESS_BARRIER_BIT.
+            glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 
             std::swap(buffers[0], buffers[1]);
             std::swap(buffers[2], buffers[3]);

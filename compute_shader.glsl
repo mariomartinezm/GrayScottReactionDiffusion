@@ -92,5 +92,7 @@ void main()
     float b = B1[idx];
     vec4 texel = color(1.51 * a + 1.062 * b);
 
+    // Writes via Image Store are incoherent so any subsequent read from this
+    // image are not guaranteed to see these changes.
     imageStore(imgOutput, ivec2(i, j), texel);
 }
