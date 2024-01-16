@@ -39,8 +39,10 @@ void main()
     i = int(gl_GlobalInvocationID.x);
     j = int(gl_GlobalInvocationID.y);
 
-    const int W = 512;
-    const int H = 512;
+    ivec2 dims = imageSize(imgOutput);
+
+    const int W = dims.x;
+    const int H = dims.y;
     int idx     = i + j * W;
 
     float DA = 1.0;
