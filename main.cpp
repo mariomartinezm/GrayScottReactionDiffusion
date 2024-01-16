@@ -4,6 +4,7 @@
 #include <random>
 #include <chrono>
 #include <algorithm>
+#include <functional>
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/vec3.hpp>
@@ -29,6 +30,44 @@ enum
 GLvoid error_callback(GLint error, const GLchar* description);
 GLvoid createModel(GLuint& vao, GLuint& vbo, GLuint& ebo);
 GLuint createTextureObject();
+
+template<typename T>
+class ShaderBuffer
+{
+public:
+    ShaderBuffer(GLuint name, GLsizei size) :
+        mName(name),
+        mSize(size)
+    {
+        glBindBuffer(GL_SHADER_STORAGE_BUFFER, name);
+        glBufferData(GL_SHADER_STORAGE_BUFFER, sizeof(T) * size, nullptr,
+                     GL_DYNAMIC_COPY);
+    }
+
+    GLuint name() { return mName; }
+
+    void initialize(std::function<T (T&)> f)
+    {
+        // Get a pointer to each buffer so we can initialize its contents
+        glBindBuffer(GL_ARRAY_BUFFER, mName);
+        GLfloat* p = reinterpret_cast<GLfloat*>(
+            glMapBufferRange(GL_ARRAY_BUFFER, 0, sizeof(T) * mSize,
+                             GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
+
+        std::transform(p, p + mSize, p, f);
+
+        glUnmapBuffer(GL_ARRAY_BUFFER);
+    }
+
+    void bind(GLuint index)
+    {
+        glBindBufferBase(GL_SHADER_STORAGE_BUFFER, index, mName);
+    }
+
+private:
+    GLuint mName;
+    GLsizei mSize;
+};
 
 int main()
 {
@@ -105,53 +144,20 @@ int main()
                      GL_DYNAMIC_COPY);
     }
 
-    // Get a pointer to each buffer so we can initialize its contents
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[0]);
-    GLfloat* p = reinterpret_cast<GLfloat*>(
-        glMapBufferRange(GL_ARRAY_BUFFER, 0, BUFFER_SIZE,
-                         GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT)
-    );
+    ShaderBuffer<GLfloat> a1(buffers[0], WIDTH * HEIGHT);
+    a1.initialize([](GLfloat&) { return 1.0F; });
 
-    std::transform(p, p + (WIDTH * HEIGHT), p, [](GLfloat&) {
-                   return 1.0F;
-                   });
+    ShaderBuffer<GLfloat> a2(buffers[1], WIDTH * HEIGHT);
+    a2.initialize([](GLfloat&) { return 1.0F; });
 
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[1]);
-    p = reinterpret_cast<GLfloat*>(
-            glMapBufferRange(GL_ARRAY_BUFFER, 0, BUFFER_SIZE,
-                             GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
-
-    std::transform(p, p + (WIDTH * HEIGHT), p, [](GLfloat&) {
-                   return 1.0f;
-                   });
-
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[2]);
-    p = reinterpret_cast<GLfloat*>(
-            glMapBufferRange(GL_ARRAY_BUFFER, 0, BUFFER_SIZE,
-                             GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
-
-    std::transform(p, p + (WIDTH * HEIGHT), p, [&dist, &engine](GLfloat&) {
+    ShaderBuffer<GLfloat> b1(buffers[2], WIDTH * HEIGHT);
+    b1.initialize([&dist, &engine](GLfloat&) {
                    if (dist(engine) < 0.000021) return 1.0F;
-
                    return 0.0F;
                    });
 
-    glUnmapBuffer(GL_ARRAY_BUFFER);
-
-    glBindBuffer(GL_ARRAY_BUFFER, buffers[3]);
-    p = reinterpret_cast<GLfloat*>(
-            glMapBufferRange(GL_ARRAY_BUFFER, 0, BUFFER_SIZE,
-                             GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT));
-
-    std::transform(p, p + (WIDTH * HEIGHT), p, [](GLfloat&) {
-                   return 0.0f;
-                   });
-
-    glUnmapBuffer(GL_ARRAY_BUFFER);
+    ShaderBuffer<GLfloat> b2(buffers[3], WIDTH * HEIGHT);
+    b2.initialize([](GLfloat&) { return 0.0f; });
 
     // Create quad
     GLuint vao, vbo, ebo;
