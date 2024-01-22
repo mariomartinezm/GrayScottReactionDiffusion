@@ -20,13 +20,6 @@ constexpr GLuint HEIGHT           = 720;
 constexpr GLuint BUFFER_SIZE      = WIDTH * HEIGHT * sizeof(GLfloat);
 constexpr GLfloat UPDATE_TIME     = 0.016F;
 
-enum
-{
-    WORKGROUP_SIZE  = 16,
-    NUM_WORKGROUPS  = 3,
-    SWARM_SIZE      = (NUM_WORKGROUPS * WORKGROUP_SIZE)
-};
-
 GLvoid error_callback(GLint error, const GLchar* description);
 GLvoid createModel(GLuint& vao, GLuint& vbo, GLuint& ebo);
 GLuint createTextureObject();
