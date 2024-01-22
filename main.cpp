@@ -211,8 +211,7 @@ int main()
 
         renderProgram.use();
 
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, outputTexture);
+        glBindTextureUnit(0, outputTexture);
 
         glBindVertexArray(vao);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (GLvoid*)0);
@@ -238,18 +237,14 @@ GLuint createTextureObject()
 {
     GLuint texture;
 
-    glGenTextures(1, &texture);
-    glBindTexture(GL_TEXTURE_2D, texture);
+    glCreateTextures(GL_TEXTURE_2D, 1, &texture);
 
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, WIDTH,
-                 HEIGHT, 0, GL_RGBA, GL_FLOAT, nullptr);
+    glTextureStorage2D(texture, 1, GL_RGBA8, WIDTH, HEIGHT);
 
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
+    glTextureParameteri(texture, GL_TEXTURE_WRAP_S,     GL_REPEAT);
+    glTextureParameteri(texture, GL_TEXTURE_WRAP_T,     GL_REPEAT);
+    glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
     return texture;
 }
