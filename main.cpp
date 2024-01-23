@@ -265,26 +265,23 @@ void createModel(GLuint& vao, GLuint& vbo, GLuint& ebo)
         1, 2, 3
     };
 
-    glGenVertexArrays(1, &vao);
-    glGenBuffers(1, &vbo);
-    glGenBuffers(1, &ebo);
+    glCreateBuffers(1, &vbo);
+    glNamedBufferData(vbo, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindVertexArray(vao);
+    glCreateBuffers(1, &ebo);
+    glNamedBufferData(ebo, sizeof(elements), elements, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    glCreateVertexArrays(1, &vao);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(elements), elements, GL_STATIC_DRAW);
+    glVertexArrayVertexBuffer(vao, 0, vbo, 0, 5 * sizeof(GLfloat));
+    glVertexArrayElementBuffer(vao, ebo);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(0 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(0);
+    glEnableVertexArrayAttrib(vao, 0);
+    glEnableVertexArrayAttrib(vao, 1);
 
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (GLvoid*)(3 * sizeof(GLfloat)));
-    glEnableVertexAttribArray(1);
+    glVertexArrayAttribFormat(vao, 0, 3, GL_FLOAT, GL_FALSE, (0 * sizeof(GLfloat)));
+    glVertexArrayAttribFormat(vao, 1, 2, GL_FLOAT, GL_FALSE, (3 * sizeof(GLfloat)));
 
-    glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-    glBindVertexArray(0);
+    glVertexArrayAttribBinding(vao, 0, 0);
+    glVertexArrayAttribBinding(vao, 1, 0);
 }
-
